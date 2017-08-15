@@ -1,3 +1,11 @@
+---
+title: "Reproducing the plots"
+author: "Alastair Currie"
+date: "15 August 2017"
+output:
+  md_document
+---
+
 #Reproducing the plots
 ```{r, echo=TRUE,results='hide',fig.keep='all'}
 library('readxl')
