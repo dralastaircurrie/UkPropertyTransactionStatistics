@@ -3,7 +3,9 @@ title: "Reproducing the plots"
 author: "Alastair Currie"
 date: "15 August 2017"
 output:
-  md_document
+  html_document:
+    keep_md: yes
+  pdf_document: default
 ---
 
 #Reproducing the plots
@@ -111,3 +113,10 @@ monthlyCount %>%
   geom_line() -> chart4f
 plot(chart4f)
 ```
+
+#Reproducing the tables
+ Table 2
+ 
+```{r tabulate}
+ knitr::kable(monthlyCount %>% filter(month %in% recentMonths, category == 'residential') %>% select (-c(category,year,fyst,fy,quarter)) %>% spread(area,count))
+ ```
