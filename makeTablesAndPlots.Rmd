@@ -13,12 +13,13 @@ library(readxl)
 library(kableExtra)
 library(lubridate)
 library(tidyverse)
+library(RColorBrewer)
 library(knitr)
 library(xts)
 library(dygraphs)
 ```
 # Plots
-```{r plots}
+```{r loadData}
 resCountRaw <- read_xlsx('./UK_Tables_Aug_2017_monthlies.xlsx','Residential')
 nonresCountRaw <- read_xlsx('./UK_Tables_Aug_2017_monthlies.xlsx','Non-residential')
 
@@ -58,77 +59,149 @@ uk_raw <- xts(data1a_raw$count,data1a_raw$month)
 uk_adj <- xts(data1a_adj$count,data1a_adj$month)
 ts1a <- cbind(uk_raw,uk_adj)
 colnames(ts1a) <- c('Unadjusted','Seasonally adjusted')
-dygraph(ts1a) %>%
+dygraph(ts1a, main = 'Total UK Residential Property Transactions') %>%
   dyLegend(show='always',width = 500) %>%
-  dyOptions(includeZero = TRUE) %>%
+  dyOptions(includeZero = TRUE, colors=c('#0f29ad','#db8572')) %>%
+  dyAxis('x', drawGrid = FALSE) %>%
+  dyAxis('y',drawGrid = FALSE, label = 'Transactions')
+```
+
+```{r chart1b}
+monthlyCount %>% 
+  filter(area == 'UK') %>%
+  filter(month %in% recentMonths) %>%
+  filter(category == 'non-residential') -> data1b
+data1b %>% filter(sa==FALSE) -> data1b_raw
+data1b %>% filter(sa==TRUE) -> data1b_adj
+uk_raw <- xts(data1b_raw$count,data1b_raw$month)
+uk_adj <- xts(data1b_adj$count,data1b_adj$month)
+ts1b <- cbind(uk_raw,uk_adj)
+colnames(ts1b) <- c('Unadjusted','Seasonally adjusted')
+dygraph(ts1b, main = 'Total UK Non-Residential Property Transactions') %>%
+  dyLegend(show='always',width = 500) %>%
+  dyOptions(includeZero = TRUE, colors=c('#0f29ad','#db8572')) %>%
   dyAxis('x', drawGrid = FALSE) %>%
   dyAxis('y',drawGrid = FALSE, label = 'Transactions')
   
 ```
 
-```{r}
-monthlyCount %>% 
-  filter(area == 'UK') %>%
-  filter(month %in% recentMonths) %>%
-  filter(category == 'non-residential') %>%
-  ggplot(mapping = aes(x=month,y=count,colour=sa)) +
-  expand_limits(y=0) +
-  geom_line() -> chart1b
-plot(chart1b)
-
+```{r chart4a}
 monthlyCount %>% 
   filter(area == 'UK') %>%
   filter(month %in% historicMonths) %>%
-  filter(category == 'residential') %>%
-  ggplot(mapping = aes(x=month,y=count,colour=sa)) +
-  expand_limits(y=0) +
-  geom_line() -> chart4a
-plot(chart4a)
-
+  filter(category == 'residential') -> data4a
+data4a %>% filter(sa==FALSE) -> data4a_raw
+data4a %>% filter(sa==TRUE) -> data4a_adj
+uk_raw <- xts(data4a_raw$count,data4a_raw$month)
+uk_adj <- xts(data4a_adj$count,data4a_adj$month)
+ts4a <- cbind(uk_raw,uk_adj)
+colnames(ts4a) <- c('Unadjusted','Seasonally adjusted')
+dygraph(ts4a, main = 'Total UK Residential Property Transactions') %>%
+  dyLegend(show='always',width = 500) %>%
+  dyOptions(includeZero = TRUE, colors=c('#0f29ad','#db8572')) %>%
+  dyAxis('x', drawGrid = FALSE) %>%
+  dyAxis('y',drawGrid = FALSE, label = 'Transactions') %>%
+  dyRangeSelector()
+  
+```
+```{r chart4b}
 monthlyCount %>% 
   filter(area == 'UK') %>%
   filter(month %in% historicMonths) %>%
-  filter(category == 'non-residential') %>%
-  ggplot(mapping = aes(x=month,y=count,colour=sa)) +
-  expand_limits(y=0) +
-  geom_line() -> chart4b
-plot(chart4b)
+  filter(category == 'non-residential') -> data4b
+data4b %>% filter(sa==FALSE) -> data4b_raw
+data4b %>% filter(sa==TRUE) -> data4b_adj
+uk_raw <- xts(data4b_raw$count,data4b_raw$month)
+uk_adj <- xts(data4b_adj$count,data4b_adj$month)
+ts4b <- cbind(uk_raw,uk_adj)
+colnames(ts4b) <- c('Unadjusted','Seasonally adjusted')
+dygraph(ts4b, main = 'Total UK Non-Residential Property Transactions') %>%
+  dyLegend(show='always',width = 500) %>%
+  dyOptions(includeZero = TRUE, colors=c('#0f29ad','#db8572')) %>%
+  dyAxis('x', drawGrid = FALSE) %>%
+  dyAxis('y',drawGrid = FALSE, label = 'Transactions') %>%
+  dyRangeSelector()
+```
 
+```{r chart4c}
 monthlyCount %>% 
   filter(area == 'England') %>%
-  filter(month %in% historicMonths) %>%
-  ggplot(mapping = aes(x=month,y=count,colour=category)) +
-  facet_grid(category ~ ., scales="free_y" )+
-  expand_limits(y=0) +
-  geom_line() -> chart4c
-plot(chart4c) # TODO dual y-axes, see http://lehoangvan.com/posts/dual-y-axis-ggplot2/
+  filter(month %in% historicMonths)-> data4c
+data4c %>% filter(category == 'residential') -> data4c_res
+data4c %>% filter(category == 'non-residential') -> data4c_nres
+res <- xts(data4c_res$count,data4c_res$month)
+nres <- xts(data4c_nres$count,data4c_nres$month)
+ts4c <- cbind(res,nres)
+colnames(ts4c) <- c('Residential','Non-Residential')
+dygraph(ts4c, main = 'Properties in England, not seasonally adjusted') %>%
+  dyLegend(show='always',width = 500) %>%
+  dyOptions(includeZero = TRUE, colors=c('#63a4d3','#399661')) %>%
+  dyAxis('x', drawGrid = FALSE) %>%
+  dyAxis('y',drawGrid = FALSE, label = 'Residential Transactions') %>%
+  dyAxis('y2',drawGrid=FALSE, independentTicks=TRUE,label = 'Non-Residential Transactions' ) %>%
+  dySeries('Non-Residential',axis='y2') %>%
+  dyRangeSelector()
+```
 
+```{r chart4d}
 monthlyCount %>% 
   filter(area == 'Scotland') %>%
-  filter(month %in% historicMonths) %>%
-  ggplot(mapping = aes(x=month,y=count,colour=category)) +
-  facet_grid(category ~ ., scales="free_y" )+
-  expand_limits(y=0) +
-  geom_line() -> chart4d
-plot(chart4d)
+  filter(month %in% historicMonths)-> data4d
+data4d %>% filter(category == 'residential') -> data4d_res
+data4d %>% filter(category == 'non-residential') -> data4d_nres
+res <- xts(data4d_res$count,data4d_res$month)
+nres <- xts(data4d_nres$count,data4d_nres$month)
+ts4d <- cbind(res,nres)
+colnames(ts4d) <- c('Residential','Non-Residential')
+dygraph(ts4d, main = 'Properties in Scotland, not seasonally adjusted') %>%
+  dyLegend(show='always',width = 500) %>%
+  dyOptions(includeZero = TRUE, colors=c('#63a4d3','#399661')) %>%
+  dyAxis('x', drawGrid = FALSE) %>%
+  dyAxis('y',drawGrid = FALSE, label = 'Residential Transactions') %>%
+  dyAxis('y2',drawGrid=FALSE, independentTicks=TRUE,label = 'Non-Residential Transactions' ) %>%
+  dySeries('Non-Residential',axis='y2') %>%
+  dyRangeSelector()
+```
 
+
+```{r chart4e}
 monthlyCount %>% 
   filter(area == 'Wales') %>%
-  filter(month %in% historicMonths) %>%
-  ggplot(mapping = aes(x=month,y=count,colour=category)) +
-  facet_grid(category ~ ., scales="free_y" )+
-  expand_limits(y=0) +
-  geom_line() -> chart4e
-plot(chart4e) # TODO dual y-axes, see http://lehoangvan.com/posts/dual-y-axis-ggplot2/
+  filter(month %in% historicMonths)-> data4e
+data4e %>% filter(category == 'residential') -> data4e_res
+data4e %>% filter(category == 'non-residential') -> data4e_nres
+res <- xts(data4e_res$count,data4e_res$month)
+nres <- xts(data4e_nres$count,data4e_nres$month)
+ts4e <- cbind(res,nres)
+colnames(ts4e) <- c('Residential','Non-Residential')
+dygraph(ts4e, main = 'Properties in Wales, not seasonally adjusted') %>%
+  dyLegend(show='always',width = 500) %>%
+  dyOptions(includeZero = TRUE, colors=c('#63a4d3','#399661')) %>%
+  dyAxis('x', drawGrid = FALSE) %>%
+  dyAxis('y',drawGrid = FALSE, label = 'Residential Transactions') %>%
+  dyAxis('y2',drawGrid=FALSE, independentTicks=TRUE,label = 'Non-Residential Transactions' ) %>%
+  dySeries('Non-Residential',axis='y2') %>%
+  dyRangeSelector()
+```
 
+```{r chart4f}
 monthlyCount %>% 
   filter(area == 'Northern Ireland') %>%
-  filter(month %in% historicMonths) %>%
-  ggplot(mapping = aes(x=month,y=count,colour=category)) +
-  facet_grid(category ~ ., scales="free_y" )+
-  expand_limits(y=0) +
-  geom_line() -> chart4f
-plot(chart4f)
+  filter(month %in% historicMonths)-> data4f
+data4f %>% filter(category == 'residential') -> data4f_res
+data4f %>% filter(category == 'non-residential') -> data4f_nres
+res <- xts(data4f_res$count,data4f_res$month)
+nres <- xts(data4f_nres$count,data4f_nres$month)
+ts4f <- cbind(res,nres)
+colnames(ts4f) <- c('Residential','Non-Residential')
+dygraph(ts4f, main = 'Properties in Northern Ireland, not seasonally adjusted') %>%
+  dyLegend(show='always',width = 500) %>%
+  dyOptions(includeZero = TRUE, colors=c('#63a4d3','#399661')) %>%
+  dyAxis('x', drawGrid = FALSE) %>%
+  dyAxis('y',drawGrid = FALSE, label = 'Residential Transactions') %>%
+  dyAxis('y2',drawGrid=FALSE, independentTicks=TRUE,label = 'Non-Residential Transactions' ) %>%
+  dySeries('Non-Residential',axis='y2') %>%
+  dyRangeSelector()
 ```
 
 #Reproducing the tables
