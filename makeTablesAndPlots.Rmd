@@ -14,8 +14,10 @@ library(kableExtra)
 library(lubridate)
 library(tidyverse)
 library(knitr)
+library(xts)
+library(dygraphs)
 ```
-#Reproducing the plots
+# Plots
 ```{r plots}
 resCountRaw <- read_xlsx('./UK_Tables_Aug_2017_monthlies.xlsx','Residential')
 nonresCountRaw <- read_xlsx('./UK_Tables_Aug_2017_monthlies.xlsx','Non-residential')
@@ -43,16 +45,28 @@ recentRangeStart <- thisMonth %m+% months(-17)
 historicRangeStart <- ymd('2005-04-01',tz='UTC')
 recentMonths <- seq(recentRangeStart,thisMonth,by='month')
 historicMonths <- seq(historicRangeStart,thisMonth,by='month')
+```
 
+```{r chart1a}
 monthlyCount %>% 
   filter(area == 'UK') %>%
   filter(month %in% recentMonths) %>%
-  filter(category == 'residential') %>%
-  ggplot(mapping = aes(x=month,y=count,colour=sa)) +
-  expand_limits(y=0) +
-  geom_line() -> chart1a
-plot(chart1a)
+  filter(category == 'residential') -> data1a
+data1a %>% filter(sa==FALSE) -> data1a_raw
+data1a %>% filter(sa==TRUE) -> data1a_adj
+uk_raw <- xts(data1a_raw$count,data1a_raw$month)
+uk_adj <- xts(data1a_adj$count,data1a_adj$month)
+ts1a <- cbind(uk_raw,uk_adj)
+colnames(ts1a) <- c('Unadjusted','Seasonally adjusted')
+dygraph(ts1a) %>%
+  dyLegend(show='always',width = 500) %>%
+  dyOptions(includeZero = TRUE) %>%
+  dyAxis('x', drawGrid = FALSE) %>%
+  dyAxis('y',drawGrid = FALSE, label = 'Transactions')
+  
+```
 
+```{r}
 monthlyCount %>% 
   filter(area == 'UK') %>%
   filter(month %in% recentMonths) %>%
