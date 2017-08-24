@@ -38,9 +38,11 @@ month        sa       England   Northern Ireland   Scotland       UK   Wales
 2017-02-01   TRUE          NA                 NA         NA   101000      NA
 2017-03-01   FALSE      88780               2130       9320   105550    5320
 2017-03-01   TRUE          NA                 NA         NA   102940      NA
-2017-04-01   FALSE      73900               1800       8030    87720    3990
-2017-04-01   TRUE          NA                 NA         NA   102090      NA
-2017-05-01   FALSE      82480               2120       8700    97830    4530
-2017-05-01   TRUE          NA                 NA         NA   100270      NA
-2017-06-01   FALSE      92910               2480      10340   110750    5020
-2017-06-01   TRUE          NA                 NA         NA    96910      NA
+2017-04-01   FALSE      73970               1800       8030    87780    3980
+2017-04-01   TRUE          NA                 NA         NA   103200      NA
+2017-05-01   FALSE      81150               2100       8550    96250    4450
+2017-05-01   TRUE          NA                 NA         NA   100460      NA
+2017-06-01   FALSE     100520               2710      11200   119820    5390
+2017-06-01   TRUE          NA                 NA         NA   103450      NA
+2017-07-01   FALSE      91900               2000       8820   107500    4780
+2017-07-01   TRUE          NA                 NA         NA   104760      NA

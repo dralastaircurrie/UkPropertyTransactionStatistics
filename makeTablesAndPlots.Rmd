@@ -1,9 +1,10 @@
 ---
-title: "UK property transactions counts -- July 2017 "
+title: 'UK property transactions counts -- July 2017 '
 author: "KAI Data Exploitation cover version"
 output:
   html_document:
-    keep_md: yes
+    keep_md: TRUE
+  github_document: default
   pdf_document: default
 ---
 ```{r setup, include=FALSE}
@@ -12,11 +13,12 @@ library(readxl)
 library(kableExtra)
 library(lubridate)
 library(tidyverse)
+library(knitr)
 ```
 #Reproducing the plots
 ```{r plots}
-resCountRaw <- read_xlsx('./UK_Tables_Jul_2017_monthlies.xlsx','Residential')
-nonresCountRaw <- read_xlsx('./UK_Tables_Jul_2017_monthlies.xlsx','Non-residential')
+resCountRaw <- read_xlsx('./UK_Tables_Aug_2017_monthlies.xlsx','Residential')
+nonresCountRaw <- read_xlsx('./UK_Tables_Aug_2017_monthlies.xlsx','Non-residential')
 
 resCount <- resCountRaw %>%
             gather('area','count',2:7) %>%
@@ -119,5 +121,5 @@ plot(chart4f)
  Table 2
  
 ```{r tabulate}
- knitr::kable(monthlyCount %>% filter(month %in% recentMonths, category == 'residential') %>% select (-c(category,year,fyst,fy,quarter)) %>% spread(area,count))
+monthlyCount %>% filter(month %in% recentMonths, category == 'residential') %>% select (-c(category,year,fyst,fy,quarter)) %>% spread(area,count) %>% kable
  ```
