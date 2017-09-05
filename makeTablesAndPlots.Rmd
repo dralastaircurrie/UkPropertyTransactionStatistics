@@ -204,9 +204,104 @@ dygraph(ts4f, main = 'Properties in Northern Ireland, not seasonally adjusted') 
   dyRangeSelector()
 ```
 
-#Reproducing the tables
- Table 2
+# Tables
+
+##Recent residential counts, by FY
  
-```{r tabulate}
-monthlyCount %>% filter(month %in% recentMonths, category == 'residential') %>% select (-c(category,year,fyst,fy,quarter)) %>% spread(area,count) %>% kable
- ```
+```{r table2p1}
+ monthlyCount %>% 
+  group_by(fy, fyst, area, category, sa) %>%
+  summarise(count = sum(count)) %>%
+  filter(category == 'residential', between(fyst,2012,2016)) %>%
+  ungroup()->
+  data2a
+
+data2a %>% 
+  filter(sa==FALSE) %>%
+  select(fy, area, count) %>%
+  spread(area, count) %>%
+  select(fy,England,Scotland,Wales,`Northern Ireland`,UK)->
+  data2b
+
+data2a %>% 
+  filter(sa==TRUE) %>%
+  select(fy, area, count) %>%
+  spread(area, count) %>%
+  select(fy,UK) %>%
+  rename(`UK <br>(seasonally adjusted)` = UK)->
+  data2c
+
+inner_join(data2b,data2c, by='fy') %>%
+  rename(`Annual <br>(FY)`=fy) -> data2d
+kable(data2d,format.args = list(big.mark = ","))
+```
+ 
+##Recent residential counts, by calendar year
+ 
+```{r table2p2}
+ monthlyCount %>% 
+  group_by(year, area, category, sa) %>%
+  summarise(count = sum(count)) %>%
+  filter(category == 'residential', between(as.integer(year),2012,2016)) %>%
+  ungroup()->
+  data2e
+
+data2e %>% 
+  filter(sa==FALSE) %>%
+  select(year, area, count) %>%
+  spread(area, count) %>%
+  select(year,England,Scotland,Wales,`Northern Ireland`,UK)->
+  data2f
+
+data2e %>% 
+  filter(sa==TRUE) %>%
+  select(year, area, count) %>%
+  spread(area, count) %>%
+  select(year,UK) %>%
+  rename(`UK <br>(seasonally adjusted)` = UK)->
+  data2g
+
+inner_join(data2f,data2g, by='year') %>%
+  rename(`Annual <br>(calendar)`=year) -> data2h
+kable(data2h,format.args = list(big.mark = ","))
+```
+
+##Recent residential counts, by month
+ 
+```{r table2p3}
+ monthlyCount %>% 
+  group_by(month, area, category, sa) %>%
+  summarise(count = sum(count)) %>%
+  filter(category == 'residential', month %in% recentMonths) %>%
+  ungroup()->
+  data2i
+
+data2i %>% 
+  filter(sa==FALSE) %>%
+  select(month, area, count) %>%
+  spread(area, count) %>%
+  select(month,England,Scotland,Wales,`Northern Ireland`,UK)->
+  data2j
+
+data2i %>% 
+  filter(sa==TRUE) %>%
+  select(month, area, count) %>%
+  spread(area, count) %>%
+  select(month,UK) %>%
+  rename(`UK <br>(seasonally adjusted)` = UK)->
+  data2k
+
+inner_join(data2j,data2k, by='month') %>%
+  mutate(`Monthly`=paste0(month.abb[month(month)],'-',year(month))) %>%
+  select(-month) %>%
+  select(Monthly,everything())-> 
+  data2l
+kable(data2l,format.args = list(big.mark = ","))
+```
+ 
+...etc.
+
+ 
+ 
+ 
+
