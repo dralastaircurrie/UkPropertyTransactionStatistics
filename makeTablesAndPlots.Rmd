@@ -1,5 +1,5 @@
 ---
-title: 'UK property transactions counts -- July 2017 '
+title: 'UK property transactions counts -- August 2017 '
 author: "KAI Data Exploitation cover version"
 output:
   html_document:
@@ -20,8 +20,8 @@ library(dygraphs)
 ```
 # Plots
 ```{r loadData}
-resCountRaw <- read_xlsx('./UK_Tables_Aug_2017_monthlies.xlsx','Residential')
-nonresCountRaw <- read_xlsx('./UK_Tables_Aug_2017_monthlies.xlsx','Non-residential')
+resCountRaw <- read_xlsx('./UK_Tables_Sep_2017_monthlies.xlsx','Residential')
+nonresCountRaw <- read_xlsx('./UK_Tables_Sep_2017_monthlies.xlsx','Non-residential')
 
 resCount <- resCountRaw %>%
             gather('area','count',2:7) %>%
@@ -41,7 +41,7 @@ monthlyCount <- dplyr::union(resCount,nonresCount) %>%
                   area=replace(area,area=='UKSeasonallyAdjusted','UK')
                 )
 
-thisMonth <- ymd('2017-07-01',tz='UTC')
+thisMonth <- ymd('2017-08-01',tz='UTC')
 recentRangeStart <- thisMonth %m+% months(-17)
 historicRangeStart <- ymd('2005-04-01',tz='UTC')
 recentMonths <- seq(recentRangeStart,thisMonth,by='month')
